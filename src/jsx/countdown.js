@@ -17,23 +17,20 @@ var Countdown = React.createClass({
   },
 
   render: function() {
+    function split(n) { return [Math.floor(n / 10), n % 10]; }
+
+    function treadmillDecrement(n) { return n === 0 ? 9 : n - 1; }
+
     var hour = this.props.hours;
-    var nextHour = hour >= 11 ? hour - 11 : hour - 1;
     var minute = this.props.minutes;
-    var nextMinute = minute >= 11 ? minute - 11 : minute - 1;
     var second = this.props.seconds;
-    var nextSecond = second >= 11 ? second - 11 : second - 1;
-
-    function split(n) {
-      return [Math.floor(n / 10), n % 10];
-    }
-
     var hourSplit = split(hour);
-    var nextHourSplit = split(nextHour);
+    var nextHourSplit = hourSplit.map(treadmillDecrement);
     var minuteSplit = split(minute);
-    var nextMinuteSplit = split(nextMinute);
+    var nextMinuteSplit = minuteSplit.map(treadmillDecrement);
     var secondSplit = split(second);
-    var nextSecondSplit = split(nextSecond);
+    var nextSecondSplit = secondSplit.map(treadmillDecrement);
+    console.log('secondSplits:', secondSplit, nextSecondSplit);
 
     return (
       <div id="countdown">
@@ -83,17 +80,28 @@ var Countdown = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
+    console.log('countdown: componentwillreceiveprops', this.props, nextProps, Date.now());
+
+    function isEqualTensPlace(a, b) {
+      return Math.floor(a / 10) === Math.floor(b / 10);
+    }
+
+    function isEqualOnesPlace(a, b) {
+      return a % 10 === b % 10;
+    }
+
     this.setState({
       flippable: {
-        hourTens: Math.floor(this.props.hours / 10) !== Math.floor(nextProps.hours / 10),
-        hourOnes: this.props.hours % 10 !== nextProps.hours % 10,
-        minuteTens: Math.floor(this.props.minutes / 10) !== Math.floor(nextProps.minutes / 10),
-        minuteOnes: this.props.minutes % 10 !== nextProps.minutes % 10,
-        secondTens: Math.floor(this.props.seconds / 10) !== Math.floor(nextProps.seconds / 10),
-        secondOnes: this.props.seconds % 10 !== nextProps.seconds % 10
+        hourTens: !isEqualTensPlace(this.props.hours, nextProps.hours),
+        hourOnes: !isEqualOnesPlace(this.props.hours, nextProps.hours),
+        minuteTens: !isEqualTensPlace(this.props.minutes, nextProps.minutes),
+        minuteOnes: !isEqualOnesPlace(this.props.minutes, nextProps.minutes),
+        secondTens: !isEqualTensPlace(this.props.seconds, nextProps.seconds),
+        secondOnes: !isEqualOnesPlace(this.props.seconds, nextProps.seconds)
       }
     });
   }
+
 });
 
 module.exports = Countdown;

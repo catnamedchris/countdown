@@ -30,7 +30,7 @@ var Main = React.createClass({
 
   _handleTimeChange: function(hour, minute, ampm) {
     if (isNaN(hour) || isNaN(minute) || !ampm || ampm.length === 0) return;
-console.log('wtf');
+
     var MS_PER_DAY = 24 * 60 * 60 * 1000;
     var MS_PER_MINUTE = 60 * 1000;
     var currentDate = new Date();
@@ -55,11 +55,11 @@ console.log('wtf');
     var hours = Math.floor(wait / MS_PER_MINUTE / 60);
     var minutes = Math.floor((wait - (hours * 60 * MS_PER_MINUTE)) / MS_PER_MINUTE);
     var seconds = Math.floor((wait - (hours * 60 * MS_PER_MINUTE) - (minutes * MS_PER_MINUTE)) / 1000);
-    console.log(hours, minutes, seconds,
-      hours * 60 * MS_PER_MINUTE + minutes * MS_PER_MINUTE + seconds * 1000);
+    console.log(hours, minutes, seconds, hours * 60 * MS_PER_MINUTE + minutes * MS_PER_MINUTE + seconds * 1000);
 
     var that = this;
     if (this.state.alarm) clearTimeout(this.state.alarm);
+    console.log('handleTimeChange');
     this.setState({
       alarm: setTimeout(function() {
         console.log('It\'s the final countdown!');
@@ -69,6 +69,7 @@ console.log('wtf');
       minutes: minutes,
       seconds: seconds,
       countdown: setInterval(function() {
+      console.log('main ' + Date.now());
         if (that.state.hours <= 0 && that.state.minutes <= 0 && that.state.seconds <= 0) {
           clearInterval(that.state.countdown);
         } else {
@@ -78,13 +79,14 @@ console.log('wtf');
           var seconds = Math.floor((wait - (hours * 60 * MS_PER_MINUTE) - (minutes * MS_PER_MINUTE)) / 1000);
 
           that.setState({
+            //alarm: 
             wait: wait,
             hours: hours,
             minutes: minutes,
             seconds: seconds
           });
         }
-      }, 1000)
+      }, 2000)
     });
   }
 });

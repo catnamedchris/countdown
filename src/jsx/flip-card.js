@@ -1,5 +1,4 @@
 var React = require('react');
-var $ = require('../js/vendor/jquery.js');
 
 var FlipCard = React.createClass({
 
@@ -8,88 +7,71 @@ var FlipCard = React.createClass({
   },
 
   getInitialState: function() {
-    return { current: this.props.current, next: this.props.next };
+    return {
+      current: this.props.current,
+      next: this.props.next,
+      onTransitionEndCurrentTop: null,
+      onTransitionEndNextBottom: null,
+      isReset: true
+    };
   },
 
   render: function() {
     return (
-      <div className="flipcard" onClick={this.tempClick}>
-        <p className="next top">
-          <span>{this.state.next}</span>
-        </p>
-        <p className="current bottom">
-          <span>{this.state.current}</span>
-        </p>
-        <p className="next bottom">
-          <span>{this.state.next}</span>
-        </p>
-        <p className="current top">
-          <span>{this.state.current}</span>
-        </p>
+      <div className="flipcard">
+        <p className="next top"><span>{this.state.next}</span></p>
+        <p className="current bottom"><span>{this.state.current}</span></p>
+        <p className="next bottom"><span>{this.state.next}</span></p>
+        <p className="current top"><span>{this.state.current}</span></p>
       </div>
     );
   },
 
-  tempClick: function() { if (this.props.onTempClick) this.props.onTempClick() },
-
   componentWillReceiveProps: function(props) {
+    console.log('componentWillReceiveProps: ' + props.id);
     if (!props.flippable[props.id]) return;
 
+    var el = this.getDOMNode();
+    var currentTop = el.querySelector('.current.top');
+    var nextBottom = el.querySelector('.next.bottom');
     var that = this;
-    var $el = $(this.getDOMNode());
-    var $currentTop = $el.find('.current.top');
-    var $nextBottom = $el.find('.next.bottom');
 
-    function animateBottom() {
-        $nextBottom.animate({ 'left': '0' }, {
-        step: function() {
-          $nextBottom.css({
-            'transform': 'rotateX(-0deg)',
-            'transform-origin': '50% 0%',
-            'transition': 'transform 500ms linear'
-          });
-        },
-        done: function() {
-          that.setState({ current: props.current, next: props.next }, function() {
-            var $el = $(that.getDOMNode());
-            var $currentTop = $el.find('.current.top');
-            var $currentBottom = $el.find('.current.bottom');
-            var $nextTop = $el.find('.next.top');
-            var $nextBottom = $el.find('.next.bottom');
+    function onTransitionEndNextBottom(e) {
+      console.log('onTransitionEndNextBottom: ' + props.id, e, that.state, props);
 
-            var cssNormal = {
-              'transform': 'none',
-              'transform-origin': '50% 0%',
-              'transition': 'none'
-            };
-            var cssRotated = {
-              'transform': 'rotateX(90deg)',
-              'transform-origin': '50% 0%',
-              'transition': 'none'
-            };
-
-            $currentTop.css(cssNormal);
-            $currentBottom.css(cssNormal);
-            $nextTop.css(cssNormal);
-            $nextBottom.css(cssRotated);
-          });
-        }
+      that.setState({ current: props.current, next: props.next }, function() {
+        currentTop.className = currentTop.className.replace(/\s+flip/g, '');
+        nextBottom.className = nextBottom.className.replace(/\s+flip/g, '');
+        console.log('flip done: ' + props.id, Date.now(), that.state);
       });
     }
 
-    $currentTop.animate({ 'left': '0', }, {
-      step: function() {
-        $currentTop.css({
-          'transform': 'rotateX(-90deg)',
-          'transform-origin': '50% 100%',
-          'transition': 'transform 500ms linear'
-        });
-      },
-      done: animateBottom
+    function onTransitionEndCurrentTop(e) {
+      console.log('onTransitionEndCurrentTop: ' + props.id, e, that.state, props);
+      nextBottom.className += ' flip';
+    }
+
+    currentTop.removeEventListener('transitionend', this.state.onTransitionEndCurrentTop);
+    currentTop.addEventListener('transitionend', onTransitionEndCurrentTop);
+    nextBottom.removeEventListener('transitionend', this.state.onTransitionEndNextBottom);
+    nextBottom.addEventListener('transitionend', onTransitionEndNextBottom);
+
+    this.setState({
+      onTransitionEndCurrentTop: onTransitionEndCurrentTop,
+      onTransitionEndNextBottom: onTransitionEndNextBottom
     });
+
+    if (this.state.isReset) {
+      el.querySelector('.next.top span').innerText = props.current;
+      el.querySelector('.next.bottom span').innerText = props.current;
+    }
+
+    console.log('will flip: ' + props.id, this.state, props);
+    currentTop.className += ' flip';
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
+    console.log('shouldComponentUpdate: ' + nextProps.id, nextProps, nextState);
     return nextProps.flippable[nextProps.id];
   }
 
