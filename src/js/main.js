@@ -35,6 +35,7 @@ var Main = React.createClass({
   },
 
   _handleTimeChange: function(hour, minute, ampm) {
+console.log('_handleTimeChange:', 'hour: ' + hour, 'minute: ' + minute, 'ampm: ' + ampm);
     if (isNaN(hour) || isNaN(minute) || !ampm || ampm.length === 0) return;
 
     var MS_PER_MINUTE = 60 * 1000;
@@ -68,7 +69,7 @@ var Main = React.createClass({
       if (this.state.hours <= 0 && this.state.minutes <= 0 && this.state.seconds <= 0) {
         clearInterval(this.state.countdown);
       } else {
-        newVals = parseClockVals(this.state.wait);
+        newVals = parseClockVals(this.state.wait - 1000);
         this.setState({
           wait: this.state.wait - 1000,
           hours: newVals.hours,
@@ -82,11 +83,13 @@ var Main = React.createClass({
     if (currentTotalMs < laterTotalMs) {
       wait = laterTotalMs - currentTotalMs;
     } else if (currentTotalMs > laterTotalMs) {
-      wait = (MS_PER_DAY - currentMs) + laterTotalMs;
+      wait = (MS_PER_DAY - currentTotalMs) + laterTotalMs;
     }
 
     var countdownVals = parseClockVals(wait);
+console.log('_handleTimeChange:', 'countdownVals: ', countdownVals);
     if (this.state.alarm) clearTimeout(this.state.alarm);
+    if (this.state.countdown) clearInterval(this.state.countdown);
     this.setState({
       alarm: setTimeout(function() { alert('time is up'); }, wait),
       wait: wait,

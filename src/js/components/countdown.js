@@ -39,7 +39,7 @@ var Countdown = React.createClass({
       var split = splitInt(n);
       return [split, split.map(treadmillDecrement)];
     });
-
+console.log('render countdown:', clockVals);
     return (
       <div id="countdown">
 
