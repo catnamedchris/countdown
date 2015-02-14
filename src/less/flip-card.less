@@ -56,34 +56,26 @@
     }
 
     .current.top {
-        /*background-color: yellow;*/
-
         z-index: 4;
 
         &.flip {
             transform: rotateX(-90deg);
             transform-origin: 50% 100%;
-            transition: transform 500ms linear;
+            transition: transform 450ms linear;
         }
     }
 
     .current.bottom {
-        /*background-color: green;*/
-
         line-height: 0;
         top: 50%;
         z-index: 2;
     }
 
     .next.top {
-        /*background-color: red;*/
-
         z-index: 1;
     }
 
     .next.bottom {
-        /*background-color: blue;*/
-
         line-height: 0;
         position: absolute;
         top: 50%;
@@ -93,7 +85,7 @@
         &.flip {
             transform: rotateX(-0deg);
             transform-origin: 50% 0%;
-            transition: transform 500ms linear;
+            transition: transform 450ms linear;
         }
     }
 }

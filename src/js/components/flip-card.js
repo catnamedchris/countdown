@@ -28,33 +28,29 @@ var FlipCard = React.createClass({
   },
 
   componentWillReceiveProps: function(props) {
-    console.log('componentWillReceiveProps: ' + props.id);
     if (!props.flippable[props.id]) return;
 
     var el = this.getDOMNode();
     var currentTop = el.querySelector('.current.top');
     var nextBottom = el.querySelector('.next.bottom');
-    var that = this;
+    var flipClassName = ' flip';
 
     function onTransitionEndNextBottom(e) {
-      console.log('onTransitionEndNextBottom: ' + props.id, e, that.state, props);
-
-      that.setState({ current: props.current, next: props.next }, function() {
-        currentTop.className = currentTop.className.replace(/\s+flip/g, '');
-        nextBottom.className = nextBottom.className.replace(/\s+flip/g, '');
-        console.log('flip done: ' + props.id, Date.now(), that.state);
+      var flipRgx = /\s+flip/g;
+      this.setState({ current: props.current, next: props.next }, function() {
+        currentTop.className = currentTop.className.replace(flipRgx, '');
+        nextBottom.className = nextBottom.className.replace(flipRgx, '');
       });
     }
 
     function onTransitionEndCurrentTop(e) {
-      console.log('onTransitionEndCurrentTop: ' + props.id, e, that.state, props);
-      nextBottom.className += ' flip';
+      nextBottom.className += flipClassName;
     }
 
     currentTop.removeEventListener('transitionend', this.state.onTransitionEndCurrentTop);
-    currentTop.addEventListener('transitionend', onTransitionEndCurrentTop);
     nextBottom.removeEventListener('transitionend', this.state.onTransitionEndNextBottom);
-    nextBottom.addEventListener('transitionend', onTransitionEndNextBottom);
+    currentTop.addEventListener('transitionend', onTransitionEndCurrentTop.bind(this));
+    nextBottom.addEventListener('transitionend', onTransitionEndNextBottom.bind(this));
 
     this.setState({
       onTransitionEndCurrentTop: onTransitionEndCurrentTop,
@@ -66,12 +62,10 @@ var FlipCard = React.createClass({
       el.querySelector('.next.bottom span').innerText = props.current;
     }
 
-    console.log('will flip: ' + props.id, this.state, props);
-    currentTop.className += ' flip';
+    currentTop.className += flipClassName;
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    console.log('shouldComponentUpdate: ' + nextProps.id, nextProps, nextState);
     return nextProps.flippable[nextProps.id];
   }
 

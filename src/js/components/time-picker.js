@@ -2,8 +2,7 @@ var React = require('react');
 var mui = require('material-ui');
 var TextField = mui.TextField;
 var DropDownMenu = mui.DropDownMenu;
-var Paper = mui.Paper;
-var DateTime = require('../js/util/date-time.js');
+var DateTime = require('../util/date-time.js');
 
 var TimePicker = React.createClass({
 

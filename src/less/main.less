@@ -13,5 +13,40 @@
 }
 
 .time-picker-container {
-    padding-top: 4em;
+    padding-top: 5em;
+    position: relative;
+
+    .until-container {
+        height: 3em;
+        margin-top: -3em;
+        overflow-y: hidden;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        z-index: 10;
+
+        .until {
+            color: #fff;
+            font-size: 6em;
+            font-weight: bold;
+            line-height: 1em;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            width: 100%;
+
+            &.bottom {
+                color: @grey-900;
+                left: 0;
+                position: absolute;
+                top: 0;
+                transform: translate(0%, -50%);
+            }
+        }
+
+        &.bottom {
+            margin-top: 0;
+        }
+    }
+
 }

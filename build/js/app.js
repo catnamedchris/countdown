@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/jsx/app.js":[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"./src/js/app.js":[function(require,module,exports){
 window.onload = function() {
   var React = require('react');
   var injectTapEventPlugin = require("react-tap-event-plugin");
@@ -10,7 +10,7 @@ window.onload = function() {
   React.render(React.createElement(Main, null), document.body);
 };
 
-},{"./main.js":"/Users/Chris/Projects/the-final-countdown/src/jsx/main.js","react":"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js","react-tap-event-plugin":"/Users/Chris/Projects/the-final-countdown/node_modules/react-tap-event-plugin/src/injectTapEventPlugin.js"}],"/Users/Chris/Projects/the-final-countdown/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
+},{"./main.js":"/Users/Chris/Projects/the-final-countdown/src/js/main.js","react":"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js","react-tap-event-plugin":"/Users/Chris/Projects/the-final-countdown/node_modules/react-tap-event-plugin/src/injectTapEventPlugin.js"}],"/Users/Chris/Projects/the-final-countdown/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -25881,28 +25881,7 @@ module.exports = warning;
 },{"./emptyFunction":"/Users/Chris/Projects/the-final-countdown/node_modules/react/lib/emptyFunction.js","_process":"/Users/Chris/Projects/the-final-countdown/node_modules/browserify/node_modules/process/browser.js"}],"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js":[function(require,module,exports){
 module.exports = require('./lib/React');
 
-},{"./lib/React":"/Users/Chris/Projects/the-final-countdown/node_modules/react/lib/React.js"}],"/Users/Chris/Projects/the-final-countdown/src/js/util/date-time.js":[function(require,module,exports){
-module.exports = {
-  formatDoubleDigits: function(n) {
-    return n < 10 ? '0' + n : '' + n;
-  },
-
-  _isValidClockNumber: function(n, min, max, text) {
-    if (isNaN(n)) return false;
-    if (text && n != text.replace(/^0+/, '')) return false;
-    return n >= min && n <= max;
-  },
-
-  isValidHour: function(n, text) {
-    return this._isValidClockNumber(n, 1, 12, text);
-  },
-
-  isValidMinute: function(n, text) {
-    return this._isValidClockNumber(n, 0, 59, text);
-  }
-};
-
-},{}],"/Users/Chris/Projects/the-final-countdown/src/jsx/countdown.js":[function(require,module,exports){
+},{"./lib/React":"/Users/Chris/Projects/the-final-countdown/node_modules/react/lib/React.js"}],"/Users/Chris/Projects/the-final-countdown/src/js/components/countdown.js":[function(require,module,exports){
 var React = require('react');
 var FlipCard = require('./flip-card.js');
 
@@ -25922,71 +25901,88 @@ var Countdown = React.createClass({displayName: "Countdown",
   },
 
   render: function() {
-    function split(n) { return [Math.floor(n / 10), n % 10]; }
+    function splitInt(n) {
+      if (n === 0) return [0, 0];
+      if (n < 10) return [0, n];
+
+      var result = [];
+      while (n !== 0) {
+        result.unshift(n % 10);
+        n = Math.floor(n / 10);
+      }
+      return result;
+    }
 
     function treadmillDecrement(n) { return n === 0 ? 9 : n - 1; }
 
-    var hour = this.props.hours;
-    var minute = this.props.minutes;
-    var second = this.props.seconds;
-    var hourSplit = split(hour);
-    var nextHourSplit = hourSplit.map(treadmillDecrement);
-    var minuteSplit = split(minute);
-    var nextMinuteSplit = minuteSplit.map(treadmillDecrement);
-    var secondSplit = split(second);
-    var nextSecondSplit = secondSplit.map(treadmillDecrement);
-    console.log('secondSplits:', secondSplit, nextSecondSplit);
+    var clockVals = [
+      this.props.hours,
+      this.props.minutes,
+      this.props.seconds
+    ].map(function(n) {
+      var split = splitInt(n);
+      return [split, split.map(treadmillDecrement)];
+    });
 
     return (
       React.createElement("div", {id: "countdown"}, 
 
-        React.createElement(FlipCard, {
-          id: "hourTens", 
-          current: hourSplit[0], 
-          next: nextHourSplit[0], 
-          flippable: this.state.flippable}), 
+        React.createElement("div", {className: "hours"}, 
+          React.createElement("h2", null, "HOURS"), 
 
-        React.createElement(FlipCard, {
-          id: "hourOnes", 
-          current: hourSplit[1], 
-          next: nextHourSplit[1], 
-          flippable: this.state.flippable}), 
+          React.createElement(FlipCard, {
+            id: "hourTens", 
+            current: clockVals[0][0][0], 
+            next: clockVals[0][1][0], 
+            flippable: this.state.flippable}), 
 
-        React.createElement("div", {className: "clock-colon"}), 
-
-        React.createElement(FlipCard, {
-          id: "minuteTens", 
-          current: minuteSplit[0], 
-          next: nextMinuteSplit[0], 
-          flippable: this.state.flippable}), 
-
-        React.createElement(FlipCard, {
-          id: "minuteOnes", 
-          current: minuteSplit[1], 
-          next: nextMinuteSplit[1], 
-          flippable: this.state.flippable}), 
+          React.createElement(FlipCard, {
+            id: "hourOnes", 
+            current: clockVals[0][0][1], 
+            next: clockVals[0][1][1], 
+            flippable: this.state.flippable})
+        ), 
 
         React.createElement("div", {className: "clock-colon"}), 
 
-        React.createElement(FlipCard, {
-          id: "secondTens", 
-          current: secondSplit[0], 
-          next: nextSecondSplit[0], 
-          flippable: this.state.flippable}), 
+        React.createElement("div", {className: "minutes"}, 
+          React.createElement("h2", null, "MINUTES"), 
 
-        React.createElement(FlipCard, {
-          id: "secondOnes", 
-          current: secondSplit[1], 
-          next: nextSecondSplit[1], 
-          flippable: this.state.flippable})
+          React.createElement(FlipCard, {
+            id: "minuteTens", 
+            current: clockVals[1][0][0], 
+            next: clockVals[1][1][0], 
+            flippable: this.state.flippable}), 
 
+          React.createElement(FlipCard, {
+            id: "minuteOnes", 
+            current: clockVals[1][0][1], 
+            next: clockVals[1][1][1], 
+            flippable: this.state.flippable})
+        ), 
+
+        React.createElement("div", {className: "clock-colon"}), 
+
+        React.createElement("div", {className: "seconds"}, 
+          React.createElement("h2", null, "SECONDS"), 
+
+          React.createElement(FlipCard, {
+            id: "secondTens", 
+            current: clockVals[2][0][0], 
+            next: clockVals[2][1][0], 
+            flippable: this.state.flippable}), 
+
+          React.createElement(FlipCard, {
+            id: "secondOnes", 
+            current: clockVals[2][0][1], 
+            next: clockVals[2][1][1], 
+            flippable: this.state.flippable})
+        )
       )
     );
   },
 
   componentWillReceiveProps: function(nextProps) {
-    console.log('countdown: componentwillreceiveprops', this.props, nextProps, Date.now());
-
     function isEqualTensPlace(a, b) {
       return Math.floor(a / 10) === Math.floor(b / 10);
     }
@@ -26011,7 +26007,7 @@ var Countdown = React.createClass({displayName: "Countdown",
 
 module.exports = Countdown;
 
-},{"./flip-card.js":"/Users/Chris/Projects/the-final-countdown/src/jsx/flip-card.js","react":"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js"}],"/Users/Chris/Projects/the-final-countdown/src/jsx/flip-card.js":[function(require,module,exports){
+},{"./flip-card.js":"/Users/Chris/Projects/the-final-countdown/src/js/components/flip-card.js","react":"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js"}],"/Users/Chris/Projects/the-final-countdown/src/js/components/flip-card.js":[function(require,module,exports){
 var React = require('react');
 
 var FlipCard = React.createClass({displayName: "FlipCard",
@@ -26042,33 +26038,29 @@ var FlipCard = React.createClass({displayName: "FlipCard",
   },
 
   componentWillReceiveProps: function(props) {
-    console.log('componentWillReceiveProps: ' + props.id);
     if (!props.flippable[props.id]) return;
 
     var el = this.getDOMNode();
     var currentTop = el.querySelector('.current.top');
     var nextBottom = el.querySelector('.next.bottom');
-    var that = this;
+    var flipClassName = ' flip';
 
     function onTransitionEndNextBottom(e) {
-      console.log('onTransitionEndNextBottom: ' + props.id, e, that.state, props);
-
-      that.setState({ current: props.current, next: props.next }, function() {
-        currentTop.className = currentTop.className.replace(/\s+flip/g, '');
-        nextBottom.className = nextBottom.className.replace(/\s+flip/g, '');
-        console.log('flip done: ' + props.id, Date.now(), that.state);
+      var flipRgx = /\s+flip/g;
+      this.setState({ current: props.current, next: props.next }, function() {
+        currentTop.className = currentTop.className.replace(flipRgx, '');
+        nextBottom.className = nextBottom.className.replace(flipRgx, '');
       });
     }
 
     function onTransitionEndCurrentTop(e) {
-      console.log('onTransitionEndCurrentTop: ' + props.id, e, that.state, props);
-      nextBottom.className += ' flip';
+      nextBottom.className += flipClassName;
     }
 
     currentTop.removeEventListener('transitionend', this.state.onTransitionEndCurrentTop);
-    currentTop.addEventListener('transitionend', onTransitionEndCurrentTop);
     nextBottom.removeEventListener('transitionend', this.state.onTransitionEndNextBottom);
-    nextBottom.addEventListener('transitionend', onTransitionEndNextBottom);
+    currentTop.addEventListener('transitionend', onTransitionEndCurrentTop.bind(this));
+    nextBottom.addEventListener('transitionend', onTransitionEndNextBottom.bind(this));
 
     this.setState({
       onTransitionEndCurrentTop: onTransitionEndCurrentTop,
@@ -26080,12 +26072,10 @@ var FlipCard = React.createClass({displayName: "FlipCard",
       el.querySelector('.next.bottom span').innerText = props.current;
     }
 
-    console.log('will flip: ' + props.id, this.state, props);
-    currentTop.className += ' flip';
+    currentTop.className += flipClassName;
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
-    console.log('shouldComponentUpdate: ' + nextProps.id, nextProps, nextState);
     return nextProps.flippable[nextProps.id];
   }
 
@@ -26093,109 +26083,12 @@ var FlipCard = React.createClass({displayName: "FlipCard",
 
 module.exports = FlipCard;
 
-},{"react":"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js"}],"/Users/Chris/Projects/the-final-countdown/src/jsx/main.js":[function(require,module,exports){
-var React = require('react');
-var mui = require('material-ui');
-var DatePicker = mui.DatePicker;
-var DropDownMenu = mui.DropDownMenu;
-var TimePicker = require('./time-picker.js');
-var Countdown = require('./countdown.js');
-
-var Main = React.createClass({displayName: "Main",
-
-  getInitialState: function() {
-    return { alarm: null, countdown: null, hours: 0, minutes: 0, seconds: 0 };
-  },
-
-  render: function() {
-    return (
-      React.createElement("div", {id: "main"}, 
-
-        React.createElement(Countdown, {
-          hours: this.state.hours, 
-          minutes: this.state.minutes, 
-          seconds: this.state.seconds}), 
-
-        React.createElement("div", {className: "time-picker-container"}, 
-          React.createElement(TimePicker, {onTimeChange: this._handleTimeChange})
-        )
-
-      )
-    );
-  },
-
-  _handleTimeChange: function(hour, minute, ampm) {
-    if (isNaN(hour) || isNaN(minute) || !ampm || ampm.length === 0) return;
-
-    var MS_PER_DAY = 24 * 60 * 60 * 1000;
-    var MS_PER_MINUTE = 60 * 1000;
-    var currentDate = new Date();
-    var currentHour = currentDate.getHours();
-    var currentMinute = currentDate.getMinutes();
-    var currentSecond = currentDate.getSeconds();
-    var currentMsec = currentDate.getMilliseconds();
-    var ampmOffset = ampm === 'AM' ? 0 : 12;
-    var laterHour = hour === 12 ? ampmOffset : hour + ampmOffset;
-    var laterMinute = minute;
-    var currentMs = 1000 * (60 * (60 * currentHour + currentMinute) + currentSecond) + currentMsec;
-    var laterMs = MS_PER_MINUTE * (60 * laterHour + laterMinute)
-    var wait;
-
-    if (currentMs < laterMs) {
-      wait = laterMs - currentMs;
-    } else if (currentMs > laterMs) {
-      wait = (MS_PER_DAY - currentMs) + laterMs;
-    }
-    console.log('wait: ' +  wait + ' ms');
-
-    var hours = Math.floor(wait / MS_PER_MINUTE / 60);
-    var minutes = Math.floor((wait - (hours * 60 * MS_PER_MINUTE)) / MS_PER_MINUTE);
-    var seconds = Math.floor((wait - (hours * 60 * MS_PER_MINUTE) - (minutes * MS_PER_MINUTE)) / 1000);
-    console.log(hours, minutes, seconds, hours * 60 * MS_PER_MINUTE + minutes * MS_PER_MINUTE + seconds * 1000);
-
-    var that = this;
-    if (this.state.alarm) clearTimeout(this.state.alarm);
-    console.log('handleTimeChange');
-    this.setState({
-      alarm: setTimeout(function() {
-        console.log('It\'s the final countdown!');
-      }, wait),
-      wait: wait,
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds,
-      countdown: setInterval(function() {
-      console.log('main ' + Date.now());
-        if (that.state.hours <= 0 && that.state.minutes <= 0 && that.state.seconds <= 0) {
-          clearInterval(that.state.countdown);
-        } else {
-          var wait = that.state.wait - 1000;
-          var hours = Math.floor(wait / MS_PER_MINUTE / 60);
-          var minutes = Math.floor((wait - (hours * 60 * MS_PER_MINUTE)) / MS_PER_MINUTE);
-          var seconds = Math.floor((wait - (hours * 60 * MS_PER_MINUTE) - (minutes * MS_PER_MINUTE)) / 1000);
-
-          that.setState({
-            //alarm: 
-            wait: wait,
-            hours: hours,
-            minutes: minutes,
-            seconds: seconds
-          });
-        }
-      }, 2000)
-    });
-  }
-});
-
-module.exports = Main;
-
-},{"./countdown.js":"/Users/Chris/Projects/the-final-countdown/src/jsx/countdown.js","./time-picker.js":"/Users/Chris/Projects/the-final-countdown/src/jsx/time-picker.js","material-ui":"/Users/Chris/Projects/the-final-countdown/node_modules/material-ui/src/index.js","react":"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js"}],"/Users/Chris/Projects/the-final-countdown/src/jsx/time-picker.js":[function(require,module,exports){
+},{"react":"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js"}],"/Users/Chris/Projects/the-final-countdown/src/js/components/time-picker.js":[function(require,module,exports){
 var React = require('react');
 var mui = require('material-ui');
 var TextField = mui.TextField;
 var DropDownMenu = mui.DropDownMenu;
-var Paper = mui.Paper;
-var DateTime = require('../js/util/date-time.js');
+var DateTime = require('../util/date-time.js');
 
 var TimePicker = React.createClass({displayName: "TimePicker",
 
@@ -26332,4 +26225,128 @@ var TimePicker = React.createClass({displayName: "TimePicker",
 
 module.exports = TimePicker;
 
-},{"../js/util/date-time.js":"/Users/Chris/Projects/the-final-countdown/src/js/util/date-time.js","material-ui":"/Users/Chris/Projects/the-final-countdown/node_modules/material-ui/src/index.js","react":"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js"}]},{},["./src/jsx/app.js"]);
+},{"../util/date-time.js":"/Users/Chris/Projects/the-final-countdown/src/js/util/date-time.js","material-ui":"/Users/Chris/Projects/the-final-countdown/node_modules/material-ui/src/index.js","react":"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js"}],"/Users/Chris/Projects/the-final-countdown/src/js/main.js":[function(require,module,exports){
+var React = require('react');
+var mui = require('material-ui');
+var DatePicker = mui.DatePicker;
+var DropDownMenu = mui.DropDownMenu;
+var TimePicker = require('./components/time-picker.js');
+var Countdown = require('./components/countdown.js');
+
+var Main = React.createClass({displayName: "Main",
+
+  getInitialState: function() {
+    return { alarm: null, countdown: null, hours: 0, minutes: 0, seconds: 0 };
+  },
+
+  render: function() {
+    return (
+      React.createElement("div", {id: "main"}, 
+
+        React.createElement(Countdown, {
+          hours: this.state.hours, 
+          minutes: this.state.minutes, 
+          seconds: this.state.seconds}), 
+
+        React.createElement("div", {className: "time-picker-container"}, 
+          React.createElement("div", {className: "until-container"}, 
+          React.createElement("h2", {className: "until top"}, "UNTIL")
+          ), 
+          React.createElement("div", {className: "until-container bottom"}, 
+          React.createElement("h2", {className: "until bottom"}, "UNTIL")
+          ), 
+          React.createElement(TimePicker, {onTimeChange: this._handleTimeChange})
+        )
+
+      )
+    );
+  },
+
+  _handleTimeChange: function(hour, minute, ampm) {
+    if (isNaN(hour) || isNaN(minute) || !ampm || ampm.length === 0) return;
+
+    var MS_PER_MINUTE = 60 * 1000;
+    var MS_PER_HOUR = MS_PER_MINUTE * 60;
+    var MS_PER_DAY = MS_PER_HOUR * 24;
+
+    var currentDate = new Date();
+    var currentHour = currentDate.getHours();
+    var currentMinute = currentDate.getMinutes();
+    var currentSecond = currentDate.getSeconds();
+    var currentMs = currentDate.getMilliseconds();
+
+    var ampmOffset = ampm === 'AM' ? 0 : 12;
+    var laterHour = hour === 12 ? ampmOffset : hour + ampmOffset;
+    var laterMinute = minute;
+
+    var currentTotalMs = 1000 * (60 * (60 * currentHour + currentMinute) + currentSecond) + currentMs;
+    var laterTotalMs = MS_PER_MINUTE * (60 * laterHour + laterMinute);
+
+    function parseClockVals(ms) {
+      var hours = Math.floor(ms / MS_PER_HOUR);
+      var minutes = Math.floor((ms - (hours * MS_PER_HOUR)) / MS_PER_MINUTE);
+      var seconds = Math.floor((ms - (hours * MS_PER_HOUR) - (minutes * MS_PER_MINUTE)) / 1000);
+
+      return { hours: hours, minutes: minutes, seconds: seconds };
+    }
+
+    function updateCountdown() {
+      var newVals;
+
+      if (this.state.hours <= 0 && this.state.minutes <= 0 && this.state.seconds <= 0) {
+        clearInterval(this.state.countdown);
+      } else {
+        newVals = parseClockVals(this.state.wait);
+        this.setState({
+          wait: this.state.wait - 1000,
+          hours: newVals.hours,
+          minutes: newVals.minutes,
+          seconds: newVals.seconds
+        });
+      }
+    }
+
+    var wait;
+    if (currentTotalMs < laterTotalMs) {
+      wait = laterTotalMs - currentTotalMs;
+    } else if (currentTotalMs > laterTotalMs) {
+      wait = (MS_PER_DAY - currentMs) + laterTotalMs;
+    }
+
+    var countdownVals = parseClockVals(wait);
+    if (this.state.alarm) clearTimeout(this.state.alarm);
+    this.setState({
+      alarm: setTimeout(function() { alert('time is up'); }, wait),
+      wait: wait,
+      hours: countdownVals.hours,
+      minutes: countdownVals.minutes,
+      seconds: countdownVals.seconds,
+      countdown: setInterval(updateCountdown.bind(this), 1000)
+    });
+  }
+});
+
+module.exports = Main;
+
+},{"./components/countdown.js":"/Users/Chris/Projects/the-final-countdown/src/js/components/countdown.js","./components/time-picker.js":"/Users/Chris/Projects/the-final-countdown/src/js/components/time-picker.js","material-ui":"/Users/Chris/Projects/the-final-countdown/node_modules/material-ui/src/index.js","react":"/Users/Chris/Projects/the-final-countdown/node_modules/react/react.js"}],"/Users/Chris/Projects/the-final-countdown/src/js/util/date-time.js":[function(require,module,exports){
+module.exports = {
+  formatDoubleDigits: function(n) {
+    return n < 10 ? '0' + n : '' + n;
+  },
+
+  _isValidClockNumber: function(n, min, max, text) {
+    if (isNaN(n)) return false;
+    if (text && n != text.replace(/^0+/, '')) return false;
+    return n >= min && n <= max;
+  },
+
+  isValidHour: function(n, text) {
+    return this._isValidClockNumber(n, 1, 12, text);
+  },
+
+  isValidMinute: function(n, text) {
+    return this._isValidClockNumber(n, 0, 59, text);
+  }
+};
+
+},{}]},{},["./src/js/app.js"]);

@@ -13,7 +13,13 @@ var watchify = require('watchify');
 
 gulp.task('lint', function() {
   gulp
-    .src(['./src/js/**/*.js', '!./src/js/vendor/*'])
+    .src([
+      './src/js/**/*.js',
+      '!./src/js/vendor/*',
+      '!./src/js/components/*',
+      '!./src/js/app.js',
+      '!./src/js/main.js'
+    ])
     .pipe(jshint())
     .pipe(jshint.reporter(stylish));
 });
@@ -59,7 +65,7 @@ gulp.task('jsx', function() {
       .pipe(browserSync.reload({ stream: true }));
   }
 
-  var bundler = browserify('./src/jsx/app.js', {
+  var bundler = browserify('./src/js/app.js', {
     cache: {},
     packageCache: {},
     fullPaths: true
