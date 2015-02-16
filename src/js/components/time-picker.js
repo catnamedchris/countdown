@@ -91,11 +91,11 @@ var TimePicker = React.createClass({
     if (DateTime.isValidHour(hour, this.state.hour)) {
       formattedHour = DateTime.formatDoubleDigits(hour);
 
-      if (this.state.hour !== formattedHour) {
+      //if (this.state.hour !== formattedHour) {
         this.setState(
           { hour: formattedHour, errorHour: '' },
           this._handleTimeChange);
-      }
+      //}
     } else {
       this.setState({ errorHour: 'Hour must be between 1-12' });
     }
@@ -104,15 +104,14 @@ var TimePicker = React.createClass({
   _handleBlurMinute: function() {
     var minute = parseInt(this.state.minute, 10);
     var formattedMinute;
-
     if (DateTime.isValidMinute(minute, this.state.minute)) {
       formattedMinute = DateTime.formatDoubleDigits(minute);
 
-      if (this.state.minute !== formattedMinute) {
+      //if (this.state.minute !== formattedMinute) {
         this.setState(
           { minute: formattedMinute, errorMinute: '' },
           this._handleTimeChange);
-      }
+      //}
     } else {
       this.setState({ errorMinute: 'Minute must be between 0-59' });
     }

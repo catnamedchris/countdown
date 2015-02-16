@@ -22,10 +22,10 @@ var Main = React.createClass({
 
         <div className="time-picker-container">
           <div className="until-container">
-          <h2 className="until top">UNTIL</h2>
+            <h2 className="until top">UNTIL</h2>
           </div>
           <div className="until-container bottom">
-          <h2 className="until bottom">UNTIL</h2>
+            <h2 className="until bottom">UNTIL</h2>
           </div>
           <TimePicker onTimeChange={this._handleTimeChange} />
         </div>
@@ -90,8 +90,22 @@ console.log('_handleTimeChange:', 'hour: ' + hour, 'minute: ' + minute, 'ampm: '
 console.log('_handleTimeChange:', 'countdownVals: ', countdownVals);
     if (this.state.alarm) clearTimeout(this.state.alarm);
     if (this.state.countdown) clearInterval(this.state.countdown);
+
+    var videos = [
+      '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&autohide=1" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
+      '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/9jK-NcRmVcw?autoplay=1&autohide=1" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
+      '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/ZO-keiOeBZo?autoplay=1&autohide=1" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
+      '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/nRckgn36lzY?autoplay=1&autohide=1" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
+      '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/J---aiyznGQ?autoplay=1&autohide=1" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
+      '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/Mcn1Q9fWahM?autoplay=1&autohide=1" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
+      '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/T4W8hdegL3g?autoplay=1&autohide=1" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
+      '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/Oai1V7kaFBk?autoplay=1&autohide=1" frameborder="0" allowfullscreen="allowfullscreen"></iframe>',
+      '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/wRRsXxE1KVY?autoplay=1&autohide=1" frameborder="0" allowfullscreen="allowfullscreen"></iframe>'
+    ];
     this.setState({
-      alarm: setTimeout(function() { alert('time is up'); }, wait),
+      alarm: setTimeout(function() {
+        document.body.innerHTML = videos[Math.floor(Math.random() * videos.length)];
+      }, wait),
       wait: wait,
       hours: countdownVals.hours,
       minutes: countdownVals.minutes,
